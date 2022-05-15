@@ -1,0 +1,45 @@
+# ~/dpuga-simplenodeapp/.github/workflows/test.yml
+
+# Name of the workflow
+name: test
+# When to run the workflow
+# In this case, run on any Pull Request that's performed in to 'main'
+on:
+  pull_request:
+    branches:
+      - main
+
+# The list of tasks to run
+jobs:
+  # The only job we have in this workflow
+  build:
+    # The name of the job
+    name: "Node.js Code Testing"
+    # The job run 'strategy'
+    # Run on the specified OSs and with the specified Node versions
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-18.04]
+        node-version: [12.x]
+        include:
+          - os: ubuntu-18.04
+            node-version: 13.x
+            experimental: true
+    # Specify on where/what the job will run
+    # In this case, specify the runner's OS
+    runs-on: ${{ matrix.os }}
+    # The steps/tasks performed in this job
+    steps:
+      # Checkout the code to the runner
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+      # Setup the Node.js version on the runner
+      - name: "Setup Node.js ${{ matrix.node-version }}"
+        uses: actions/setup-node@v3
+        with:
+          node-version:  ${{ matrix.node-version }}
+      - name: "Install the Mocha test package"
+        run: npm install -g mocha
+      - name: "Run the code tests"
+        run: npm test
+
