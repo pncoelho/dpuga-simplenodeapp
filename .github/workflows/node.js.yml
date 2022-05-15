@@ -1,44 +1,40 @@
-# ~/dpuga-simplenodeapp/.github/workflows/node.js.yml
-
-# Name of the workflow
-name: build
-# When to run the workflow
-# In this case, run on any push that contains modified JS files
+# steps.yml
+name: steps
 on:
   push:
-    paths: 
-      - '**.js'
-# The list of tasks to run
+    branches: [ main ]
 jobs:
-  # The only job we have in this workflow
-  build:
-    # The name of the job
-    name: "Node.js Build Workflow"
-    # The job run 'strategy'
-    # Run on the specified OSs and with the specified Node versions
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
-        node-version: [12.x, 14.x, 16.x]
-        # Exclude the latest MacOS with Node 12.X
-        exclude:
-          - os: macos-latest
-            node-version: 12.x
-    # Specify on where/what the job will run
-    # In this case, specify the runner's OS
-    runs-on: ${{ matrix.os }}
-    # The steps/tasks performed in this job
+  run:
+    runs-on: ubuntu-latest
     steps:
-      # Checkout the code to the runner
-      - name: "Checkout code"
-        uses: actions/checkout@v3
-      # Setup the Node.js version on the runner
-      - name: "Setup Node.js ${{ matrix.node-version }}"
-        uses: actions/setup-node@v3
-        with:
-          node-version:  ${{ matrix.node-version }}
-      - name: "Install necessary Node packages"
-        run: npm ci
-      - name: "Build the Node.js code"
-        run: npm run build --if-present
+    - name: My first step
+      env:
+        MY_VAR: Hi there! My name is
+        FIRST_NAME: Chad
+        MIDDLE_NAME: Michael
+        LAST_NAME: Crowell
+      run: |
+        echo $MY_VAR $FIRST_NAME $MIDDLE_NAME $LAST_NAME.
+    - name: My second step
+      if: success()
+      run: echo "The previous step has finished successfully"
+    - name: My third step
+      uses: actions/checkout@v1
+      with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/ # if your publishing your package to npm or github package repo
+    # Reference a specific commit
+    - uses: actions/setup-node@0e2f9cd
+    # Reference the major version of a release
+    - uses: actions/setup-node@v1
+    # Reference a minor version of a release
+    - uses: actions/setup-node@v1.2
+    # Reference a branch
+    - uses: actions/setup-node@master
+    - name: my fifth step
+      uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: 'Message that will be displayed on users'' first issue'
+        pr-message: 'Message that will be displayed on users'' first pr'
 
